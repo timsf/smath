@@ -2,40 +2,53 @@
 \ProvidesPackage{smath}[2014/12/12 Macros for semantic math mode]
 \RequirePackage{mathtools}
 
-% abstract object declarations. use this do declare a variable to belong to a class of mathematical objects
+
+% core macros / abstract object declarations. use this to declare a member of a class of mathematical objects
 \newcommand{\nvec}[1]{\boldsymbol{\mathbf{#1}}} % vector. params: name
 \newcommand{\mat}[1]{\boldsymbol{\mathbf{#1}}} % matrix. args: name
 \newcommand{\fun}[3][]{#2 #1 \left( #3 \right)} % function. params: (sub/sup), name, arguments
-\newcommand{\op}[2]{\mathrm{#1} \left( #2 \right)} % special function. params: (sub/sup), name, arguments
+\newcommand{\op}[2]{\mathrm{#1} \left( #2 \right)} % operator function. params: (sub/sup), name, arguments
 \newcommand{\opt}[1]{#1 ^*} % stationary point. params: name
 \newcommand{\mean}[1]{\bar{#1}} % sample mean. params: random variable name
 \newcommand{\est}[1]{\widehat{#1}} % maximum likelihood estimator. params: random variable name
 
-% common operators. this automates some formatting for mathematical operations
-\newcommand{\T}[0]{^\mathrm{T}} % transpose
-\newcommand{\dd}[1]{\mathrm{d} #1} % differential coefficient
-\newcommand{\norm}[2][]{\left\parallel #2 \right\parallel_{#1}} % n-norm. params: (n)n, argument
-\newcommand{\nexp}[1]{\exp \left\{ #1 \right\}} % exponential function. params: argument
+
+% common operators not implemented in amsmath
+\DeclareMathOperator*{\argmax}{arg\,max} % argmax
+\DeclareMathOperator*{\argmin}{arg\,min} % argmin
+\newcommand{\E}{\mathbf{E}} % expectation
+
+% common delimiter-based operators
+\newcommand{\norm}[2][]{\left\| #2 \right\|_{#1}} % p-norm. params: (p), argument
 \newcommand{\abs}[1]{\left| #1 \right|} % absolute value. params: argument
 \newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor} % floor function. params: argument
 \newcommand{\ceil}[1]{\left\lceil #1 \right\rceil} % ceiling function. params: argument
-\newcommand{\nint}[3][]{\int #1 #2 \dd #3} % integral. params: (bounds), argument, integration var
 
-% common objects
+% common symbols
+\newcommand{\T}[0]{^\mathrm{T}} % transpose
+\newcommand{\dd}[0]{\mathrm{d}} % differential coefficient
 \newcommand{\N}[0]{\mathbf{R}} % naturals
 \newcommand{\Z}[0]{\mathbf{Z}} % integers
 \newcommand{\Q}[0]{\mathbf{Q}} % rationals
 \newcommand{\R}[0]{\mathbf{R}} % reals
 \newcommand{\C}[0]{\mathbf{C}} % complex
 
-% common densities. these are not very flexible, so you still have to put some thought into formatting the args
-\newcommand{\dgauss}[3]{\frac{1}{\sqrt{2 \pi #3}} \nexp{-\frac{\left( #1 - #2 \right)^2}{2 #3}}} % gauss density. params: random var name, mean, variance
-\newcommand{\dgamma}[3]{\frac{#3 ^ #2}{\fun{\Gamma}{#2}} #1 ^{#2 - 1} e^{- #3 #1}} % gamma density. params: random var name, shape, rate
-\newcommand{\dt}[2]{\frac{\fun{\Gamma}{\frac{#2 + 1}{2}}}{\sqrt{\pi #2}\fun{\Gamma}{\frac{#2 + 1}{2}}} \left( 1 + \frac{#1 ^{2}}{#2} \right)^{-\frac{#2 + 1}{2}}} % student density. params: random var name, df
-%\newcommand{\dmgauss}[4]{\left(2 \pi\ right)^{-\frac{#4}{2}} \op{det}{#3}^{\frac{1}{2}} \nexp{-\frac{1}{2} \left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}} % multi-gauss density. params: random vector, mean vector, precision matrix, dims
-%\newcommand{\dmt}[4]{\left(2 \pi\ right)^{-\frac{#4}{2}} \op{det}{#3}^{\frac{1}{2}} \nexp{-\frac{1}{2} \left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}} % multi-gauss density. params: random vector, mean vector, precision matrix, dims
-
 % misc expressions
 \newcommand{\set}[2]{\left\{ #1 #2 \right\}} % set braces. params: elements, restrictions
+\newcommand{\nint}[3][]{\int #1 #2 \,\dd #3} % integral. params: (bounds), argument, integration var
+
+% common densities. these are not very flexible, so you still have to put some thought into formatting the args]
+\newcommand{\dgauss}[3]{\frac{1}{\sqrt{2 \pi #3}} \op{exp}{-\frac{\left( #1 - #2 \right)^2}{2 #3}}} % gauss density. params: random var name, mean, variance
+\newcommand{\dgamma}[3]{\frac{#3 ^ #2}{\fun{\Gamma}{#2}} #1 ^{#2 - 1} e^{- #3 #1}} % gamma density. params: random var name, shape, rate
+\newcommand{\dt}[2]{\frac{\fun{\Gamma}{\frac{#2 + 1}{2}}}{\sqrt{\pi #2}\fun{\Gamma}{\frac{#2 + 1}{2}}} \left( 1 + \frac{#1 ^{2}}{#2} \right)^{-\frac{#2 + 1}{2}}} % student density. params: random var name, df
+\newcommand{\dmgauss}[4]{\left(2 \pi \right)^{-\frac{#4}{2}} \op{det}{#3}^{\frac{1}{2}} \op{exp}{-\frac{1}{2} \left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}} % multi-gauss density. params: random vector, mean vector, precision matrix, dims
+\newcommand{\dmt}[5]{\frac{\fun{\Gamma}{\frac{#4 + #5}{2}}}{\fun{\Gamma}{\frac{#4}{2}}} \frac{\op{det}{#3}^{\frac{1}{2}}}{\left( \pi #4 \right)^\frac{#5}{2}} \left( 1 + \frac{\left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}{#4} \right)^{-\frac{#4 + #5}{2}}} % student density. params: random var name, mean vector, inv. scale matrix, df, dims
+
+% common kernels
+\newcommand{\kgauss}[3]{\op{exp}{-\frac{\left( #1 - #2 \right)^2}{2 #3}}} % gauss density. params: random var name, mean, variance
+\newcommand{\kgamma}[3]{#1 ^{#2 - 1} e^{- #3 #1}} % gamma density. params: random var name, shape, rate
+\newcommand{\kt}[2]{\left( 1 + \frac{#1 ^{2}}{#2} \right)^{-\frac{#2 + 1}{2}}} % student density. params: random var name, df
+\newcommand{\kmgauss}[3]{\op{exp}{-\frac{1}{2} \left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}} % multi-gauss density. params: random vector, mean vector, precision matrix
+\newcommand{\kmt}[5]{\left( 1 + \frac{\left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}{#4} \right)^{-\frac{#4 + #5}{2}}} % student density. params: random var name, mean vector, inv. scale matrix, df, dims
 
 \endinput

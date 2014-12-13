@@ -1,0 +1,36 @@
+\documentclass[a4paper,10pt]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage{smath}
+\title{Smath Documentation}
+\author{T. Stumpf-Fétizon}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\texttt{smath} is a collection of \LaTeX macros that automates and centralizes most of the formatting in math mode. Instead, you declare a variable to belong to some class of mathematical objects (e.g. a vector) and the package defines the appropriate formatting for that class. The overall goal is to let you focus on the meaning of your writing, just as outside of math mode.
+\end{abstract}
+
+\section{Use Cases}
+My beef with \LaTeX is that it requires me to do a lot of manual formatting which makes the code crowded and unreadable. Moreover, direct formatting violates the basic principle of ``what you see is what you mean''. Finally, I think that math mode should work like CSS in that there should be some document-wide classes that define how a certain mathematical object should be formatted. Notice that while these issues may seem obvious and their solution trivial, I have not encountered a standard solution yet. Hence this package.
+\subsection{Standard Formatting}
+Consider a mathematical object that is given a standard formatting, say a vector. These are usually printed bold ($\nvec{x}$). For roman letters, we use the \texttt{mathbf}. This does not work for greek letters, so we need to use the \texttt{boldsymbol} command. Dealing with different commands to format the same object is cumbersome. Furthermore, the commands have little semantic meaning as other objects (say matrices) may use the same formatting. The obvious solution is to define a macro that is applied to every vector and that takes care of the different formatting for different alphabets. To stick with the vector case, you can use the \texttt{nvec} command to mark any roman or greek letter as a vector in your source code. It will then be boldened automatically. If you prefer to format all your vectors by using an arrow, you can do so by changing the macro.
+\subsection{Delimiter Scaling}
+Another issue concerns the use of delimiters and parantheses for operator functions (e.g. the exponential function). In complicated expressions, we need to use the \texttt{left} and \texttt{right} commands to scale parantheses so that they ``hug'' fractions and inner parantheses correctly. This often piles up to a ton of scaling commands that completely obscure the meaning of the markup. Now notice that a large proportion of braces and parantheses are used to declare functions and operators. Adequate macros can automate the formatting of operator names and the scaling of the parantheses. For example the \texttt{op} command prints the name of the operator in straight letters (as customary) and encloses the argument in correctly scaled parantheses.
+\subsection{Complex Expressions}
+Some areas of mathematics, especially statistics, contain a large amount of long and reocurring expressions (think density functions). The package provides macros that let you print some of those expressions for variable arguments with a single command.
+
+\section{Using smath}
+Place \texttt{smath.sty} in the same folder as your \texttt{.tex} file and add \texttt{usepackage\{smath\}} to your preamble. You can now use any macro defined in \texttt{smath.sty}. Consult the file for macro definitions. You can easily extend the package by adding your own macros to the file. Consult a \LaTeX documentation of your choice on how to define macros.
+
+\section{Coding Examples}
+\begin{gather*}
+  \fun{p}{x | \mu, \sigma^2} = \dgauss{x}{\mu}{\sigma^2} \\
+  \fun{p}{x | \alpha, \beta} = \dgamma{x}{\alpha}{\beta} \\
+  \fun{p}{x | \nu} = \dt{x}{\nu} \\
+  \fun{p}{\nvec{x} | \nvec{\mu}, \mat{Q}} = \dmgauss{\nvec{x}}{\nvec{\mu}}{\mat{Q}}{D} \\
+  \fun{p}{\nvec{x} | \nvec{\mu}, \mat{\Lambda}, \nu} = \dmt{\nvec{x}}{\nvec{\mu}}{\mat{\Lambda}}{\nu}{D} \\
+\end{gather*}
+
+\end{document}
