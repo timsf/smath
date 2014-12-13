@@ -2,6 +2,23 @@
 \usepackage[utf8]{inputenc}
 \usepackage{mathtools}
 \usepackage{smath}
+\usepackage{listings}
+\usepackage{color}
+\definecolor{green}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstset{
+ basicstyle=\small\ttfamily,
+ breaklines=true,
+ commentstyle=\color{gray},
+ frame=tb,
+ keepspaces=true,
+ keywordstyle=\color{blue},
+ numbers=left,
+ numberstyle=\tiny,
+ stringstyle=\color{mauve},
+ xleftmargin=2\parindent
+}
 \title{Smath Documentation}
 \author{T. Stumpf-Fétizon}
 
@@ -13,24 +30,61 @@
 \end{abstract}
 
 \section{Use Cases}
-My beef with \LaTeX is that it requires me to do a lot of manual formatting which makes the code crowded and unreadable. Moreover, direct formatting violates the basic principle of ``what you see is what you mean''. Finally, I think that math mode should work like CSS in that there should be some document-wide classes that define how a certain mathematical object should be formatted. Notice that while these issues may seem obvious and their solution trivial, I have not encountered a standard solution yet. Hence this package.
+My beef with \LaTeX is that it requires me to do a lot of manual formatting which makes the code crowded and unreadable. Moreover, direct formatting violates the basic principle of ``what you see is what you mean''. Finally, I think that math mode should work like CSS in that there should be some document-wide classes that define how a certain mathematical object should be formatted. The class adds semantic meaning to the markup while taking charge of the formatting. Notice that while these issues may seem obvious and their solution trivial, I have not encountered a standard solution yet. Hence this package.
 \subsection{Standard Formatting}
-Consider a mathematical object that is given a standard formatting, say a vector. These are usually printed bold ($\nvec{x}$). For roman letters, we use the \texttt{mathbf}. This does not work for greek letters, so we need to use the \texttt{boldsymbol} command. Dealing with different commands to format the same object is cumbersome. Furthermore, the commands have little semantic meaning as other objects (say matrices) may use the same formatting. The obvious solution is to define a macro that is applied to every vector and that takes care of the different formatting for different alphabets. To stick with the vector case, you can use the \texttt{nvec} command to mark any roman or greek letter as a vector in your source code. It will then be boldened automatically. If you prefer to format all your vectors by using an arrow, you can do so by changing the macro.
+Consider a mathematical object that is given a standard formatting, say a vector. These are usually printed bold ($\nvec{x}$). For roman letters, we use the \texttt{mathbf} command. This does not work for greek letters, so we need to use the \texttt{boldsymbol} command. Dealing with different commands to format the same object is cumbersome. Furthermore, the commands have little semantic meaning as other objects (say matrices) may use the same formatting. The obvious solution is to define a macro that is applied to every vector and that takes care of the different formatting for different alphabets. To stick with the vector case, you can use the \texttt{nvec} command to mark any roman or greek letter as a vector in your source code. It will then be boldened automatically. If you prefer to format all your vectors by using an arrow, you can do so by changing the macro.
 \subsection{Delimiter Scaling}
-Another issue concerns the use of delimiters and parantheses for operator functions (e.g. the exponential function). In complicated expressions, we need to use the \texttt{left} and \texttt{right} commands to scale parantheses so that they ``hug'' fractions and inner parantheses correctly. This often piles up to a ton of scaling commands that completely obscure the meaning of the markup. Now notice that a large proportion of braces and parantheses are used to declare functions and operators. Adequate macros can automate the formatting of operator names and the scaling of the parantheses. For example the \texttt{op} command prints the name of the operator in straight letters (as customary) and encloses the argument in correctly scaled parantheses.
+Another issue concerns the use of delimiters and parantheses for operator functions (e.g. the exponential function). In complicated expressions, we need to use the \texttt{left} and \texttt{right} commands to scale parantheses so that they ``hug'' fractions and inner parantheses correctly. This often piles up to a ton of scaling commands that completely obscure the meaning of the markup. Nonetheless, notice that a large proportion of braces and parantheses are used to declare functions and operators. Adequate macros can automate the formatting of operator names and the scaling of the parantheses. For example, the \texttt{op} command prints the name of the operator in straight letters (as customary) and encloses the argument in correctly scaled parantheses. When using the macros, you should only have to deal with delimiters when you are actually grouping terms.
 \subsection{Complex Expressions}
 Some areas of mathematics, especially statistics, contain a large amount of long and reocurring expressions (think density functions). The package provides macros that let you print some of those expressions for variable arguments with a single command.
 
-\section{Using smath}
-Place \texttt{smath.sty} in the same folder as your \texttt{.tex} file and add \texttt{usepackage\{smath\}} to your preamble. You can now use any macro defined in \texttt{smath.sty}. Consult the file for macro definitions. You can easily extend the package by adding your own macros to the file. Consult a \LaTeX documentation of your choice on how to define macros.
-
 \section{Coding Examples}
-\begin{gather*}
-  \fun{p}{x | \mu, \sigma^2} = \dgauss{x}{\mu}{\sigma^2} \\
-  \fun{p}{x | \alpha, \beta} = \dgamma{x}{\alpha}{\beta} \\
-  \fun{p}{x | \nu} = \dt{x}{\nu} \\
-  \fun{p}{\nvec{x} | \nvec{\mu}, \mat{Q}} = \dmgauss{\nvec{x}}{\nvec{\mu}}{\mat{Q}}{D} \\
-  \fun{p}{\nvec{x} | \nvec{\mu}, \mat{\Lambda}, \nu} = \dmt{\nvec{x}}{\nvec{\mu}}{\mat{\Lambda}}{\nu}{D} \\
-\end{gather*}
+This section contains some examples of how the package is supposed to make your life easier.
+\subsection{The Trace of the Hat Matrix}
+The \texttt{op} command has two parameters which are the name of the operator and its argument. It prints the name in straight letters and encloses the argument in scaling parantheses. As an application, consider the trace of the hat matrix:
+\begin{equation}
+  \op{tr}{\mat{H}} = \op{tr}{\mat{\Phi} (\mat{\Phi}\T \mat{\Phi})^{-1} \mat{\Phi}\T}
+\end{equation}
+Now consider two equivalent ways of coding the equation above:
+\begin{lstlisting}[caption = Coding the trace of the hat matrix, language = TeX]
+% standard latex code
+\begin{equation}
+  \mathrm{tr}(\mathbf{H}) = \mathrm{tr} \left( \boldsymbol{\Phi} (\boldsymbol{\Phi}^\mathrm{T} \boldsmybol{\Phi})^{-1} \boldsymbol{\Phi}^\mathrm{T} \right)
+\end{equation}
+
+% code with smath macros
+\begin{equation}
+  \op{tr}{\mat{H}} = \op{tr}{\mat{\Phi} (\mat{\Phi}\T \mat{\Phi})^{-1} \mat{\Phi}\T}
+\end{equation}
+\end{lstlisting}
+Using a few widely applicable macros, we halved the length of the markup and made its mathematical meaning far more obvious.
+\subsection{The Multivariate Gaussian}
+Have a look at the density of the multivariate gaussian distribution.
+\begin{equation}
+  \fun{p}{\nvec{x}, \nvec{\mu}, \mat{Q}} = \dmgauss{\nvec{x}}{\nvec{\mu}}{\mat{Q}}{D}
+\end{equation}
+It may take minutes for an inexperienced typist to code that equation in \LaTeX. Have a look at two equivalent versions of the underlying \LaTeX code:
+\begin{lstlisting}[caption = Coding the density of the multivariate gaussian distribtion, language = TeX]
+% standard latex code
+\begin{equation}
+  p(\mathbf{x}, \boldsymbol{\mu}, \mathbf{Q}) = (2\pi)^{-\frac{D}{2}} \mathrm{det}(\mathbf{Q})^{\frac{1}{2}} \exp \left( -\frac{1}{2} (\mathbf{x} - \boldsymbol{\mu})^{\mathrm{T}} \mathbf{Q} (\mathbf{x} - \boldsymbol{\mu}) \right)
+\end{equation}
+
+% code with smath macros
+\begin{equation}
+  \fun{p}{\nvec{x}, \nvec{\mu}, \mat{Q}} = (2\pi)^{-\frac{D}{2}} \op{det}{\mat{Q}}^{\frac{1}{2}} \op{exp}{-\frac{1}{2} (\nvec{x} - \nvec{\mu})\T \mat{Q} (\nvec{x} - \nvec{\mu})}
+\end{equation}
+\end{lstlisting}
+It actually took me 2 minutes to write the first version. The macros cut out 25\% of the code and again improve clarity. You would obtain even greater gains if you needed to scale more braces.\\\\
+Some expression occur so often in similar form that it may be more efficient to print them using macros. To stick with the previous example, you can print it using the following snippet:
+\begin{lstlisting}[caption = Coding the density with a macro, language = TeX]
+\begin{equation}
+  \fun{p}{\nvec{x}, \nvec{\mu}, \mat{Q}} = \dmgauss{\nvec{x}}{\nvec{\mu}}{\mat{Q}}{D}
+\end{equation}
+\end{lstlisting}
+It gives you some flexibility, but formatting might not be adequate for some arguments. Nevertheless, there are many circumstances in which you can save a lot of time by using these canned macros.
+
+\section{Using smath}
+Place \texttt{smath.sty} in the same folder as your \texttt{.tex} file and add \texttt{usepackage\{smath\}} to your preamble. The package requires \texttt{mathtools} to be loaded. You can now use any macro defined in \texttt{smath.sty}. Consult the file for macro definitions. You can easily extend the package by adding your own macros to the file. Consult your favorite \LaTeX documentation on how to define macros.
 
 \end{document}
