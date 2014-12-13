@@ -26,11 +26,11 @@
 \maketitle
 
 \begin{abstract}
-\texttt{smath} is a collection of \LaTeX macros that automates and centralizes most of the formatting in math mode. Instead, you declare a variable to belong to some class of mathematical objects (e.g. a vector) and the package defines the appropriate formatting for that class. The overall goal is to let you focus on the meaning of your writing, just as outside of math mode.
+\texttt{smath} is a collection of \LaTeX macros that automates and centralizes most of the formatting in math mode. You declare a variable to belong to some class of mathematical objects (e.g. a vector) and the package defines the appropriate formatting for that class. The overall goal is to let you focus on the meaning of your writing, just as outside of math mode.
 \end{abstract}
 
 \section{Use Cases}
-My beef with \LaTeX is that it requires me to do a lot of manual formatting which makes the code crowded and unreadable. Moreover, direct formatting violates the basic principle of ``what you see is what you mean''. Finally, I think that math mode should work like CSS in that there should be some document-wide classes that define how a certain mathematical object should be formatted. The class adds semantic meaning to the markup while taking charge of the formatting. Notice that while these issues may seem obvious and their solution trivial, I have not encountered a standard solution yet. Hence this package.
+My beef with \LaTeX is that it requires me to do a lot of manual formatting which makes the code crowded and unreadable. Moreover, direct formatting violates the basic principle of ``what you see is what you mean''. Finally, I think that math mode should work like CSS in that there should be some document-wide classes that define how a certain mathematical object should be formatted. Notice that while these issues may seem obvious and their solution trivial, I have not encountered a standard solution yet. Hence this package.
 \subsection{Standard Formatting}
 Consider a mathematical object that is given a standard formatting, say a vector. These are usually printed bold ($\nvec{x}$). For roman letters, we use the \texttt{mathbf} command. This does not work for greek letters, so we need to use the \texttt{boldsymbol} command. Dealing with different commands to format the same object is cumbersome. Furthermore, the commands have little semantic meaning as other objects (say matrices) may use the same formatting. The obvious solution is to define a macro that is applied to every vector and that takes care of the different formatting for different alphabets. To stick with the vector case, you can use the \texttt{nvec} command to mark any roman or greek letter as a vector in your source code. It will then be boldened automatically. If you prefer to format all your vectors by using an arrow, you can do so by changing the macro.
 \subsection{Delimiter Scaling}
@@ -39,7 +39,7 @@ Another issue concerns the use of delimiters and parantheses for operator functi
 Some areas of mathematics, especially statistics, contain a large amount of long and reocurring expressions (think density functions). The package provides macros that let you print some of those expressions for variable arguments with a single command.
 
 \section{Coding Examples}
-This section contains some examples of how the package is supposed to make your life easier.
+This section contains some examples of how the package is supposed to make your life easier. They illustrate the general ideas explained above.
 \subsection{The Trace of the Hat Matrix}
 The \texttt{op} command has two parameters which are the name of the operator and its argument. It prints the name in straight letters and encloses the argument in scaling parantheses. As an application, consider the trace of the hat matrix:
 \begin{equation}
