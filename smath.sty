@@ -5,11 +5,11 @@
 
 
 % core macros / abstract object declarations. use this to declare a member of a class of mathematical objects
-\newcommand{\fun}[3]{\, #1 \left( #2 \right)} % function. params: name, arguments
+\newcommand{\fun}[2]{\, #1 \left( #2 \right)} % function. params: name, arguments
 \newcommand{\op}[2]{\, \mathrm{#1} \left( #2 \right)} % operator function. params: name, arguments
 \newcommand{\nvec}[1]{\boldsymbol{\mathbf{#1}}} % vector. params: name
 \newcommand{\mat}[1]{\boldsymbol{\mathbf{#1}}} % matrix. args: name
-\newcommand{\opt}[1]{#1 ^*} % stationary point. params: name
+\newcommand{\opt}[1]{#1^*} % stationary point. params: name
 \newcommand{\nint}[3][]{\int \limits #1 \left( #2 \right) \dd #3} % integral, special case of op. params: (bounds), argument, integration var
 
 % common operators not implemented in amsmath
@@ -44,14 +44,14 @@
 \DeclareMathOperator{\cov}{Cov} % covariance
 
 % common densities. these are not very flexible, so you still have to put some thought into formatting the args, e.g. passing them in parantheses
-\newcommand{\dnorm}[3]{\frac{1}{\sqrt{2 \pi #3}} \op{exp}{-\frac{\left( #1 - #2 \right)^2}{2 #3}}} % gauss density. params: random var name, mean, variance
-\newcommand{\dt}[4]{\frac{\fun{\Gamma}{(#4 + 1)/2}}{\fun{\Gamma}{(#4 + 1)/2}} \sqrt{\frac{#3}{\pi #4}} \left( 1 + \frac{#3 (#1 - #2)^2}{#4} \right)^{-(#4 + 1)/2}} % student density. params: random var name, mean, inv. scale, df
+\newcommand{\dnorm}[3]{\frac{1}{\sqrt{2\pi #3}} \op{exp}{-\frac{\left(#1 - #2 \right)^2}{2 #3}}} % gauss density. params: random var name, mean, variance
+\newcommand{\dt}[4]{\frac{\fun{\Gamma}{(#4 + 1)/2}}{\fun{\Gamma}{#4/2}} \sqrt{\frac{#3}{\pi #4}} \left( 1 + \frac{#3 (#1 - #2)^2}{#4} \right)^{-(#4 + 1)/2}} % student density. params: random var name, mean, inv. scale, df
 \newcommand{\dlap}[3]{\frac{1}{2 #3} \op{exp}{-\frac{\abs{#1 - #2}}{#3}}} % laplace density. params: random var name, mean, scale
-\newcommand{\dbeta}[3]{\frac{#1 ^{#2 - 1} (1 - #1)^{\#3 - 1}}{\op{B}{#2, #3}}} % beta density. params: random var name, shape1, shape2
-\newcommand{\dgamma}[3]{\frac{#3 ^{#2}}{\fun{\Gamma}{#2}} #1 ^{#2 - 1} \op{exp}{- #3 #1}} % gamma density. params: random var name, shape, rate
-\newcommand{\dchisq}[2]{\frac{1}{2^{#2 /2} \fun{\Gamma}{#2 /2}} #1 ^{#2 /2 - 1} \op{exp}{- \frac{#1}{2}}} % chi-squared density. params: random var name, df
+\newcommand{\dbeta}[3]{\frac{#1^{#2 - 1} (1 - #1)^{#3 - 1}}{\op{B}{#2, #3}}} % beta density. params: random var name, shape1, shape2
+\newcommand{\dgamma}[3]{\frac{#3^{#2}}{\fun{\Gamma}{#2}} #1^{#2 - 1} \op{exp}{-#3 #1}} % gamma density. params: random var name, shape, rate
+\newcommand{\dchisq}[2]{\frac{1}{2^{#2/2} \fun{\Gamma}{#2/2}} #1^{#2/2 - 1} \op{exp}{-\frac{ #1 }{2}}} % chi-squared density. params: random var name, df
 \newcommand{\dweib}[3]{\frac{#3}{#2} \left( \frac{#1}{#2} \right)^{#3 - 1} \op{exp}{-\left( \frac{#1}{#2} \right)^{#3}}} % weibull density. params: random var name, scale, shape
-\newcommand{\df}[3]{\sqrt{\frac{\left( #2 #1 \right)^{#2} #3 ^{#3}}{\left( #2 #1 + #3 \right)^{#2 + #3}}} \frac{1}{#1 \times \op{B}{#2 /2, #3 /2}}} % f density. params: random var name, df1, df2
+\newcommand{\df}[3]{\sqrt{\frac{\left( #2 #1 \right)^{#2} #3 ^{#3}}{\left( #2 #1 + #3 \right)^{#2 + #3}}} \frac{1}{#1 \op{B}{#2 /2, #3 /2}}} % f density. params: random var name, df1, df2
 \newcommand{\dmnorm}[4]{\frac{\op{det}{#3}^{1/2}}{\left(2 \pi \right)^{#4 /2}} \op{exp}{-\frac{1}{2} \left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}} % multi-gauss density. params: random vector, mean vector, precision matrix, dims
 \newcommand{\dmt}[5]{\frac{\fun{\Gamma}{(#4 + #5)/2}}{\fun{\Gamma}{#4 /2}} \frac{\op{det}{#3}^{1/2}}{\left( \pi #4 \right)^{#5 /2}} \left( 1 + \frac{\left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}{#4} \right)^{-(#4 + #5)/2}} % student density. params: random var name, mean vector, inv. scale matrix, df, dims
 % 2do: wishart, mlaplace, kernels, likelihoods
