@@ -40,21 +40,37 @@
 
 % common operators not implemented in amsmath
 \DeclareMathOperator{\E}{\mathbf{E}} % expectation
-\DeclareMathOperator{\var}{Var} % variance
-\DeclareMathOperator{\cov}{Cov} % covariance
+\DeclareMathOperator{\var}{var} % variance
+\DeclareMathOperator{\cov}{cov} % covariance
+\DeclareMathOperator{\cor}{cor} % correlation
 
 % common densities. these are not very flexible, so you still have to put some thought into formatting the args, e.g. passing them in parantheses
 \newcommand{\dnorm}[3]{\frac{1}{\sqrt{2\pi #3}} \op{exp}{-\frac{\left(#1 - #2 \right)^2}{2 #3}}} % gauss density. params: random var name, mean, variance
-\newcommand{\dt}[4]{\frac{\fun{\Gamma}{(#4 + 1)/2}}{\fun{\Gamma}{#4/2}} \sqrt{\frac{#3}{\pi #4}} \left( 1 + \frac{#3 (#1 - #2)^2}{#4} \right)^{-(#4 + 1)/2}} % student density. params: random var name, mean, inv. scale, df
-\newcommand{\dlap}[3]{\frac{1}{2 #3} \op{exp}{-\frac{\abs{#1 - #2}}{#3}}} % laplace density. params: random var name, mean, scale
-\newcommand{\dbeta}[3]{\frac{#1^{#2 - 1} (1 - #1)^{#3 - 1}}{\op{B}{#2, #3}}} % beta density. params: random var name, shape1, shape2
+\newcommand{\dt}[4]{\frac{\fun{\Gamma}{\left( #4 + 1 \right)/2}}{\fun{\Gamma}{#4/2}} \sqrt{\frac{#3}{\pi #4}} \left( 1 + \frac{#3 (#1 - #2)^2}{#4} \right)^{-\left( #4 + 1 \right)/2}} % student density. params: random var name, mean, inv. scale, df
+\newcommand{\dlap}[3]{\frac{#3}{2} \op{exp}{-#3 \abs{#1 - #2}}} % laplace density. params: random var name, mean, inv. scale
+\newcommand{\dbeta}[3]{\frac{#1^{#2 - 1} \left( 1 - #1 \right)^{#3 - 1}}{\op{B}{#2, #3}}} % beta density. params: random var name, shape1, shape2
 \newcommand{\dgamma}[3]{\frac{#3^{#2}}{\fun{\Gamma}{#2}} #1^{#2 - 1} \op{exp}{-#3 #1}} % gamma density. params: random var name, shape, rate
 \newcommand{\dchisq}[2]{\frac{1}{2^{#2/2} \fun{\Gamma}{#2/2}} #1^{#2/2 - 1} \op{exp}{-\frac{ #1 }{2}}} % chi-squared density. params: random var name, df
 \newcommand{\dweib}[3]{\frac{#3}{#2} \left( \frac{#1}{#2} \right)^{#3 - 1} \op{exp}{-\left( \frac{#1}{#2} \right)^{#3}}} % weibull density. params: random var name, scale, shape
 \newcommand{\df}[3]{\sqrt{\frac{\left( #2 #1 \right)^{#2} #3 ^{#3}}{\left( #2 #1 + #3 \right)^{#2 + #3}}} \frac{1}{#1 \op{B}{#2 /2, #3 /2}}} % f density. params: random var name, df1, df2
 \newcommand{\dmnorm}[4]{\frac{\op{det}{#3}^{1/2}}{\left(2 \pi \right)^{#4 /2}} \op{exp}{-\frac{1}{2} \left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}} % multi-gauss density. params: random vector, mean vector, precision matrix, dims
-\newcommand{\dmt}[5]{\frac{\fun{\Gamma}{(#4 + #5)/2}}{\fun{\Gamma}{#4 /2}} \frac{\op{det}{#3}^{1/2}}{\left( \pi #4 \right)^{#5 /2}} \left( 1 + \frac{\left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}{#4} \right)^{-(#4 + #5)/2}} % student density. params: random var name, mean vector, inv. scale matrix, df, dims
-% 2do: wishart, mlaplace, kernels, likelihoods
+\newcommand{\dmt}[5]{\frac{\fun{\Gamma}{(#4 + #5)/2}}{\fun{\Gamma}{#4 /2}} \frac{\op{det}{#3}^{1/2}}{\left( \pi #4 \right)^{#5 /2}} \left( 1 + \frac{\left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}{#4} \right)^{-(#4 + #5)/2}} % multi-student density. params: random var name, mean vector, inv. scale matrix, df, dims
+\newcommand{\dwish}[4]{\frac{\op{det}{#1}^{\left( #2 - #4 - 1 \right)/2}}{2^{\left( #2 #4 \right)/2} \op{det}{#3}^{#2/2} \fun{\Gamma_{#4}}{#2/2}} \op{exp}{-\frac{\op{tr}{#3^{-1} #1}}{2}}} % wishart density. params: random matrix, df, scale matrix, dims
+
+% common kernels
+\newcommand{\knorm}[3]{\op{exp}{-\frac{\left(#1 - #2 \right)^2}{2 #3}}} % gauss kernel. params: random var name, mean, variance
+\newcommand{\kt}[4]{\left( 1 + \frac{#3 (#1 - #2)^2}{#4} \right)^{-\left( #4 + 1 \right)/2}} % student kernel. params: random var name, mean, inv. scale, df
+\newcommand{\klap}[3]{\op{exp}{-#3 \abs{#1 - #2}}} % laplace kernel. params: random var name, mean, inv. scale
+\newcommand{\kgamma}[3]{#1^{#2 - 1} \op{exp}{-#3 #1}} % gamma kernel. params: random var name, shape, rate
+\newcommand{\kmnorm}[3]{\op{exp}{-\frac{1}{2} \left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}} % multi-gauss kernel. params: random vector, mean vector, precision matrix
+\newcommand{\kmt}[5]{\left( 1 + \frac{\left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}{#4} \right)^{-(#4 + #5)/2}} % multi-student kernel. params: random var name, mean vector, inv. scale matrix, df, dims
+\newcommand{\kwish}[4]{\op{det}{#1}^{\left( #2 - #4 - 1 \right)/2} \op{exp}{-\frac{\op{tr}{#3^{-1} #1}}{2}}} % wishart kernel. params: random matrix, df, scale matrix, dims
+
+% common log-likelihoods
+\newcommand{\lnorm}[5]{-\frac{#4}{2} \ln #3 - \frac{1}{2 #3} \sum_{#5} \left( #1_{#5} - #2 \right)^2} % gaussian likelihood function minus constant terms. params: data, mean, variance, observations, index
+\newcommand{\lmnorm}[5]{\frac{#4}{2} \ln \op{det}{#3} - \frac{1}{2} \sum_{#5} \left( #1_{#5} - #2 \right)\T #3 \left( #1_{#5} - #2 \right)} % multi-gaussian likelihood function minus constant terms. params: data vector, mean vector, precision matrix, observations, index
+
+% 2do: moments
 \ProcessOptions\relax
 
 
