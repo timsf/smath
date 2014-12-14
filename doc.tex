@@ -1,7 +1,6 @@
 \documentclass[a4paper,10pt]{scrartcl}
 \usepackage[utf8]{inputenc}
-\usepackage{mathtools}
-\usepackage{smath}
+\usepackage[stats]{smath}
 \usepackage{listings}
 \usepackage{color}
 \definecolor{green}{rgb}{0,0.6,0}
@@ -42,9 +41,9 @@ Some areas of mathematics, especially statistics, contain a large amount of long
 This section contains some examples of how the package is supposed to make your life easier. They illustrate the general ideas explained above.
 \subsection{The Trace of the Hat Matrix}
 The \texttt{op} command has two parameters which are the name of the operator and its argument. It prints the name in straight letters and encloses the argument in scaling parantheses. As an application, consider the trace of the hat matrix:
-\begin{equation}
+\begin{align}
   \op{tr}{\mat{H}} = \op{tr}{\mat{\Phi} (\mat{\Phi}\T \mat{\Phi})^{-1} \mat{\Phi}\T}
-\end{equation}
+\end{align}
 Now consider two equivalent ways of coding the equation above:
 \begin{lstlisting}[caption = Coding the trace of the hat matrix, language = TeX]
 % standard latex code
@@ -59,10 +58,10 @@ Now consider two equivalent ways of coding the equation above:
 \end{lstlisting}
 Using a few widely applicable macros, we halved the length of the markup and made its mathematical meaning far more obvious.
 \subsection{The Multivariate Gaussian}
-Have a look at the density of the multivariate gaussian distribution.
-\begin{equation}
-  \fun{p}{\nvec{x}, \nvec{\mu}, \mat{Q}} = \dmgauss{\nvec{x}}{\nvec{\mu}}{\mat{Q}}{D}
-\end{equation}
+Have a look at the density of the multivariate gaussian distribution:
+\begin{align}
+  \fun{p}{\nvec{x}, \nvec{\mu}, \mat{Q}} == \dmnorm{\nvec{x}}{\nvec{\mu}}{\mat{Q}}{D}
+\end{align}
 It may take minutes for an inexperienced typist to code that equation in \LaTeX. Have a look at two equivalent versions of the underlying \LaTeX code:
 \begin{lstlisting}[caption = Coding the density of the multivariate gaussian distribtion, language = TeX]
 % standard latex code
@@ -79,12 +78,13 @@ It actually took me 2 minutes to write the first version. The macros cut out 25\
 Some expression occur so often in similar form that it may be more efficient to print them using macros. To stick with the previous example, you can print it using the following snippet:
 \begin{lstlisting}[caption = Coding the density with a macro, language = TeX]
 \begin{equation}
-  \fun{p}{\nvec{x}, \nvec{\mu}, \mat{Q}} = \dmgauss{\nvec{x}}{\nvec{\mu}}{\mat{Q}}{D}
+  \fun{p}{\nvec{x}, \nvec{\mu}, \mat{Q}} = \dmnorm{\nvec{x}}{\nvec{\mu}}{\mat{Q}}{D}
 \end{equation}
 \end{lstlisting}
 It gives you some flexibility, but formatting might not be adequate for some arguments. Nevertheless, there are many circumstances in which you can save a lot of time by using these canned macros.
 
 \section{Using smath}
-Place \texttt{smath.sty} in the same folder as your \texttt{.tex} file and add \texttt{usepackage\{smath\}} to your preamble. The package requires \texttt{mathtools} to be loaded. You can now use any macro defined in \texttt{smath.sty}. Consult the file for macro definitions. You can easily extend the package by adding your own macros to the file. Consult your favorite \LaTeX documentation on how to define macros.
+Place \texttt{smath.sty} in the same folder as your \texttt{.tex} file and add \texttt{usepackage\{smath\}} to your preamble. \texttt{Smath} requires the \texttt{mathtools} package to be installed. You can now use any macro defined in \texttt{smath.sty}. Consult the file for macro definitions. You can easily extend the package by adding your own macros to the file. Consult your favorite \LaTeX documentation on how to define macros.\\\\
+The goal is to have a set of options to choose from to extend functionality. Currently, there is a \texttt{stats} option that mostly provides macros for density functions.
 
 \end{document}
