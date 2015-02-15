@@ -1,77 +1,148 @@
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 \ProvidesPackage{smath}[2014/12/12 Macros for semantic math mode]
 \RequirePackage{mathtools}
+\RequirePackage{xparse}
 \DeclareOption{stats}
 
 
-% core macros / abstract object declarations. use this to declare a member of a class of mathematical objects
-\newcommand{\fun}[2]{\, #1 \left( #2 \right)} % function. params: name, arguments
-\newcommand{\op}[2]{\, \mathrm{#1} \left( #2 \right)} % operator function. params: name, arguments
-\newcommand{\nvec}[1]{\boldsymbol{\mathbf{#1}}} % vector. params: name
-\newcommand{\mat}[1]{\boldsymbol{\mathbf{#1}}} % matrix. args: name
-\newcommand{\opt}[1]{#1^*} % stationary point. params: name
-\newcommand{\nint}[3][]{\int \limits #1 \left( #2 \right) \dd #3} % integral, special case of op. params: (bounds), argument, integration var
 
-% common operators not implemented in amsmath
-\DeclareMathOperator*{\argmax}{arg\,max} % argmax
-\DeclareMathOperator*{\argmin}{arg\,min} % argmin
+%%% CORE MACROS %%%
 
-% common delimiter-based operators
-\newcommand{\set}[2]{\left\{ #1 #2 \right\}} % set braces. params: elements, restrictions
-\newcommand{\norm}[2][]{\left\| #2 \right\|_{#1}} % p-norm. params: (p), argument
-\newcommand{\abs}[1]{\left| #1 \right|} % absolute value. params: argument
-\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor} % floor function. params: argument
-\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil} % ceiling function. params: argument
+% function. params: {name}, {arguments}
+\NewDocumentCommand\func{mg}{
+  \IfNoValueTF{#2}
+    {\mathop{#1}}
+    {\mathop{#1} \left( #2 \right)}
+}
 
-% common symbols
-\newcommand{\T}[0]{^\mathrm{T}} % transpose
-\newcommand{\dd}[0]{\mathrm{d}} % differential
-\newcommand{\N}[0]{\mathbf{R}} % naturals
-\newcommand{\Z}[0]{\mathbf{Z}} % integers
-\newcommand{\Q}[0]{\mathbf{Q}} % rationals
-\newcommand{\R}[0]{\mathbf{R}} % reals
-\newcommand{\C}[0]{\mathbf{C}} % complex
+% operator. params: *display limits, {name}, [lower bound], [upper bound], {argument in brackets}
+\NewDocumentCommand\op{smO{}O{}g}{
+  \IfBooleanTF{#1}{
+    \IfNoValueTF{#5}
+      {\operatorname*{\mathbf{#2}}_{#3}^{#4}}
+      {\operatorname*{\mathbf{#2}}_{#3}^{#4} \left[ #5 \right]}
+    }{
+    \IfNoValueTF{#5}
+      {\operatorname{\mathbf{#2}}_{#3}^{#4}}
+      {\operatorname{\mathbf{#2}}_{#3}^{#4} \left[ #5 \right]}
+    }
+}
+
+% vector. params: {name}
+\NewDocumentCommand\vect{m}{\boldsymbol{#1}} 
+
+% matrix. params: {name}
+\NewDocumentCommand\mat{m}{\boldsymbol{\mathbf{#1}}} 
+
+% stationary point. params: {name}
+\NewDocumentCommand\opt{m}{#1^*} 
+
+% class. params: {name}
+\NewDocumentCommand\class{m}{\mathcal{#1}} 
+
+% map. params: {name}, {from}, {to}
+\NewDocumentCommand\map{mmm}{#1: \, #2 \mapsto #3} 
 
 
-\ExecuteOptions{stats} % statistics-specific macros
-% abstract object declarations. use this to declare a member of a class of mathematical objects
-\newcommand{\mean}[1]{\bar{#1}} % sample mean. params: random variable name
-\newcommand{\est}[1]{\widehat{#1}} % maximum likelihood estimator. params: random variable name
 
-% common operators not implemented in amsmath
-\DeclareMathOperator{\E}{\mathbf{E}} % expectation
-\DeclareMathOperator{\var}{var} % variance
-\DeclareMathOperator{\cov}{cov} % covariance
-\DeclareMathOperator{\cor}{cor} % correlation
+%%% DELIMITER-BASED OPERATORS %%%
 
-% common densities. these are not very flexible, so you still have to put some thought into formatting the args, e.g. passing them in parantheses
-\newcommand{\dnorm}[3]{\frac{1}{\sqrt{2\pi #3}} \op{exp}{-\frac{\left(#1 - #2 \right)^2}{2 #3}}} % gauss density. params: random var name, mean, variance
-\newcommand{\dt}[4]{\frac{\fun{\Gamma}{\left( #4 + 1 \right)/2}}{\fun{\Gamma}{#4/2}} \sqrt{\frac{#3}{\pi #4}} \left( 1 + \frac{#3 (#1 - #2)^2}{#4} \right)^{-\left( #4 + 1 \right)/2}} % student density. params: random var name, mean, inv. scale, df
-\newcommand{\dlap}[3]{\frac{#3}{2} \op{exp}{-#3 \abs{#1 - #2}}} % laplace density. params: random var name, mean, inv. scale
-\newcommand{\dbeta}[3]{\frac{#1^{#2 - 1} \left( 1 - #1 \right)^{#3 - 1}}{\op{B}{#2, #3}}} % beta density. params: random var name, shape1, shape2
-\newcommand{\dgamma}[3]{\frac{#3^{#2}}{\fun{\Gamma}{#2}} #1^{#2 - 1} \op{exp}{-#3 #1}} % gamma density. params: random var name, shape, rate
-\newcommand{\dchisq}[2]{\frac{1}{2^{#2/2} \fun{\Gamma}{#2/2}} #1^{#2/2 - 1} \op{exp}{-\frac{ #1 }{2}}} % chi-squared density. params: random var name, df
-\newcommand{\dweib}[3]{\frac{#3}{#2} \left( \frac{#1}{#2} \right)^{#3 - 1} \op{exp}{-\left( \frac{#1}{#2} \right)^{#3}}} % weibull density. params: random var name, scale, shape
-\newcommand{\df}[3]{\sqrt{\frac{\left( #2 #1 \right)^{#2} #3 ^{#3}}{\left( #2 #1 + #3 \right)^{#2 + #3}}} \frac{1}{#1 \op{B}{#2 /2, #3 /2}}} % f density. params: random var name, df1, df2
-\newcommand{\dmnorm}[4]{\frac{\op{det}{#3}^{1/2}}{\left(2 \pi \right)^{#4 /2}} \op{exp}{-\frac{1}{2} \left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}} % multi-gauss density. params: random vector, mean vector, precision matrix, dims
-\newcommand{\dmt}[5]{\frac{\fun{\Gamma}{(#4 + #5)/2}}{\fun{\Gamma}{#4 /2}} \frac{\op{det}{#3}^{1/2}}{\left( \pi #4 \right)^{#5 /2}} \left( 1 + \frac{\left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}{#4} \right)^{-(#4 + #5)/2}} % multi-student density. params: random var name, mean vector, inv. scale matrix, df, dims
-\newcommand{\dwish}[4]{\frac{\op{det}{#1}^{\left( #2 - #4 - 1 \right)/2}}{2^{\left( #2 #4 \right)/2} \op{det}{#3}^{#2/2} \fun{\Gamma_{#4}}{#2/2}} \op{exp}{-\frac{\op{tr}{#3^{-1} #1}}{2}}} % wishart density. params: random matrix, df, scale matrix, dims
+% p-norm. params: {argument}, [p]
+\NewDocumentCommand\norm{mO{}}{\left\| #1 \right\|_{#2}} 
 
-% common kernels
-\newcommand{\knorm}[3]{\op{exp}{-\frac{\left(#1 - #2 \right)^2}{2 #3}}} % gauss kernel. params: random var name, mean, variance
-\newcommand{\kt}[4]{\left( 1 + \frac{#3 (#1 - #2)^2}{#4} \right)^{-\left( #4 + 1 \right)/2}} % student kernel. params: random var name, mean, inv. scale, df
-\newcommand{\klap}[3]{\op{exp}{-#3 \abs{#1 - #2}}} % laplace kernel. params: random var name, mean, inv. scale
-\newcommand{\kgamma}[3]{#1^{#2 - 1} \op{exp}{-#3 #1}} % gamma kernel. params: random var name, shape, rate
-\newcommand{\kmnorm}[3]{\op{exp}{-\frac{1}{2} \left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}} % multi-gauss kernel. params: random vector, mean vector, precision matrix
-\newcommand{\kmt}[5]{\left( 1 + \frac{\left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}{#4} \right)^{-(#4 + #5)/2}} % multi-student kernel. params: random var name, mean vector, inv. scale matrix, df, dims
-\newcommand{\kwish}[4]{\op{det}{#1}^{\left( #2 - #4 - 1 \right)/2} \op{exp}{-\frac{\op{tr}{#3^{-1} #1}}{2}}} % wishart kernel. params: random matrix, df, scale matrix, dims
+% absolute value. params: {argument}
+\NewDocumentCommand\abs{m}{\left| #1 \right|} 
 
-% common log-likelihoods
-\newcommand{\lnorm}[5]{-\frac{#4}{2} \ln #3 - \frac{1}{2 #3} \sum_{#5} \left( #1_{#5} - #2 \right)^2} % gaussian likelihood function minus constant terms. params: data, mean, variance, observations, index
-\newcommand{\lmnorm}[5]{\frac{#4}{2} \ln \op{det}{#3} - \frac{1}{2} \sum_{#5} \left( #1_{#5} - #2 \right)\T #3 \left( #1_{#5} - #2 \right)} % multi-gaussian likelihood function minus constant terms. params: data vector, mean vector, precision matrix, observations, index
+% floor function. params: {argument}
+\NewDocumentCommand\floor{m}{\left\lfloor #1 \right\rfloor} 
+
+% ceiling function. params: {argument}
+\NewDocumentCommand\ceil{m}{\left\lceil #1 \right\rceil} 
+
+
+
+%%% DELIMITER-BASED OBJECTS %%%
+
+% set braces. params: {elements}, [conditions]
+\NewDocumentCommand\set{mo}{
+  \IfNoValueTF{#2}
+    {\left\{ #1 \right\}}
+    {\left\{ #1 \st #2 \right\}}
+} 
+
+% sequence braces. params: {elements}, [lower bound], [upper bound]
+\NewDocumentCommand\seq{mO{}O{}}{\left( #1 \right)_{#2}^{#3}} 
+
+% factor braces. params: {summands}
+\NewDocumentCommand\fac{m}{\left( #1 \right)} 
+
+
+
+%%% SYMBOLS %%%
+
+% such that / conditional on
+\NewDocumentCommand\st{}{ \ | \ } 
+
+% matrix transpose
+\NewDocumentCommand\T{}{^\mathrm{T}} 
+
+
+
+\ExecuteOptions{stats} %%% STATS MACROS %%%
+%%% CORE MACROS %%%
+
+% sample mean. params: {random variable name}
+\NewDocumentCommand\mean{m}{\bar{#1}} 
+
+% estimator. params: {random variable name}
+\NewDocumentCommand\est{m}{\widehat{#1}} 
+
+
+
+%%% COMMON DENSITIES /// these are not very flexible, so you still have to put some thought into formatting the args, e.g. passing them in parantheses %%%
+
+\NewDocumentCommand\dnorm{mmm}{\frac{1}{\sqrt{2\pi #3}} \op{exp}{-\frac{\left(#1 - #2 \right)^2}{2 #3}}} % gauss density. params: random var name, mean, variance
+\NewDocumentCommand\dt{mmmm}{\frac{\func{\Gamma}{\left( #4 + 1 \right)/2}}{\func{\Gamma}{#4/2}} \sqrt{\frac{#3}{\pi #4}} \left( 1 + \frac{#3 (#1 - #2)^2}{#4} \right)^{-\left( #4 + 1 \right)/2}} % student density. params: random var name, mean, inv. scale, df
+\NewDocumentCommand\dlap{mmm}{\frac{#3}{2} \op{exp}{-#3 \abs{#1 - #2}}} % laplace density. params: random var name, mean, inv. scale
+\NewDocumentCommand\dbeta{mmm}{\frac{#1^{#2 - 1} \left( 1 - #1 \right)^{#3 - 1}}{\op{B}{#2, #3}}} % beta density. params: random var name, shape1, shape2
+\NewDocumentCommand\dgamma{mmm}{\frac{#3^{#2}}{\func{\Gamma}{#2}} #1^{#2 - 1} \op{exp}{-#3 #1}} % gamma density. params: random var name, shape, rate
+\NewDocumentCommand\dchisq{mm}{\frac{1}{2^{#2/2} \func{\Gamma}{#2/2}} #1^{#2/2 - 1} \op{exp}{-\frac{ #1 }{2}}} % chi-squared density. params: random var name, df
+\NewDocumentCommand\dweib{mmm}{\frac{#3}{#2} \left( \frac{#1}{#2} \right)^{#3 - 1} \op{exp}{-\left( \frac{#1}{#2} \right)^{#3}}} % weibull density. params: random var name, scale, shape
+\NewDocumentCommand\df{mmm}{\sqrt{\frac{\left( #2 #1 \right)^{#2} #3 ^{#3}}{\left( #2 #1 + #3 \right)^{#2 + #3}}} \frac{1}{#1 \op{B}{#2 /2, #3 /2}}} % f density. params: random var name, df1, df2
+\NewDocumentCommand\dmnorm{mmmO{D}}{\frac{\op{det}{#3}^{1/2}}{\left(2 \pi \right)^{#4 /2}} \op{exp}{-\frac{1}{2} \left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}} % multi-gauss density. params: random vector, mean vector, precision matrix, [dims}
+\NewDocumentCommand\dmt{mmmmO{D}}{\frac{\func{\Gamma}{(#4 + #5)/2}}{\func{\Gamma}{#4 /2}} \frac{\op{det}{#3}^{1/2}}{\left( \pi #4 \right)^{#5 /2}} \left( 1 + \frac{\left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}{#4} \right)^{-(#4 + #5)/2}} % multi-student density. params: random var name, mean vector, inv. scale matrix, df, [dims]
+\NewDocumentCommand\dwish{mmmO{D}}{\frac{\op{det}{#1}^{\left( #2 - #4 - 1 \right)/2}}{2^{\left( #2 #4 \right)/2} \op{det}{#3}^{#2/2} \func{\Gamma_{#4}}{#2/2}} \op{exp}{-\frac{\op{tr}{#3^{-1} #1}}{2}}} % wishart density. params: random matrix, df, scale matrix, [dims]
+
+
+
+%%% COMMON KERNELS %%%
+
+\NewDocumentCommand\knorm{mmm}{\op{exp}{-\frac{\left(#1 - #2 \right)^2}{2 #3}}} % gauss kernel. params: random var name, mean, variance
+\NewDocumentCommand\kt{mmmm}{\left( 1 + \frac{#3 (#1 - #2)^2}{#4} \right)^{-\left( #4 + 1 \right)/2}} % student kernel. params: random var name, mean, inv. scale, df
+\NewDocumentCommand\klap{mmm}{\op{exp}{-#3 \abs{#1 - #2}}} % laplace kernel. params: random var name, mean, inv. scale
+\NewDocumentCommand\kbeta{mmm}{#1^{#2 - 1} \left( 1 - #1 \right)^{#3 - 1}} % beta kernel. params: random var name, shape1, shape2
+\NewDocumentCommand\kgamma{mmm}{#1^{#2 - 1} \op{exp}{-#3 #1}} % gamma kernel. params: random var name, shape, rate
+\NewDocumentCommand\kmnorm{mmm}{\op{exp}{-\frac{1}{2} \left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}} % multi-gauss kernel. params: random vector, mean vector, precision matrix
+\NewDocumentCommand\kmt{mmmmO{D}}{\left( 1 + \frac{\left( #1 - #2 \right)\T #3 \left( #1 - #2 \right)}{#4} \right)^{-(#4 + #5)/2}} % multi-student kernel. params: random var name, mean vector, inv. scale matrix, df, [dims]
+\NewDocumentCommand\kwish{mmmO{D}}{\op{det}{#1}^{\left( #2 - #4 - 1 \right)/2} \op{exp}{-\frac{\op{tr}{#3^{-1} #1}}{2}}} % wishart kernel. params: random matrix, df, scale matrix, [dims]
+
+
+
+%%% COMMON LIKELIHOODS %%%
+
+\NewDocumentCommand\lnorm{mmmO{n}O{i}}{-\frac{#4}{2} \ln #3 - \frac{1}{2 #3} \sum_{#5} \left( #1_{#5} - #2 \right)^2} % gaussian likelihood funcction minus constant terms. params: data, mean, variance, nobs, index
+\NewDocumentCommand\lmnorm{mmmmO{n}O{i}O{}}{\frac{#4}{2} \ln \op{det}{#3} - \frac{1}{2} \sum_{#5} #6 \left( #1_{#5} - #2 \right)\T #3 \left( #1_{#5} - #2 \right)} % multi-gaussian likelihood function minus constant terms. params: data vector, mean vector, precision matrix, nobs, index, (weight)
 
 % 2do: moments
 \ProcessOptions\relax
 
+
+
+%%% FIXES DELIMITER SPACING %%%
+
+\let\originalleft\left
+\let\originalright\right
+\RenewDocumentCommand\left{}{\mathopen{}\mathclose\bgroup\originalleft}
+\RenewDocumentCommand\right{}{\aftergroup\egroup\originalright}
 
 \endinput

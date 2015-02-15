@@ -1,21 +1,17 @@
 \documentclass[a4paper,10pt]{scrartcl}
 \usepackage[utf8]{inputenc}
+\usepackage[top = 3cm, left = 3cm, right = 3cm, bottom = 3cm]{geometry}
 \usepackage[stats]{smath}
+\usepackage{booktabs}
+\usepackage{hyperref}
 \usepackage{listings}
-\usepackage{color}
-\definecolor{green}{rgb}{0,0.6,0}
-\definecolor{gray}{rgb}{0.5,0.5,0.5}
-\definecolor{mauve}{rgb}{0.58,0,0.82}
 \lstset{
  basicstyle=\small\ttfamily,
  breaklines=true,
- commentstyle=\color{gray},
  frame=tb,
  keepspaces=true,
- keywordstyle=\color{blue},
  numbers=left,
  numberstyle=\tiny,
- stringstyle=\color{mauve},
  xleftmargin=2\parindent
 }
 \title{Smath Documentation}
@@ -25,66 +21,110 @@
 \maketitle
 
 \begin{abstract}
-\texttt{smath} is a collection of \LaTeX macros that automates and centralizes most of the formatting in math mode. You declare a variable to belong to some class of mathematical objects (e.g. a vector) and the package defines the appropriate formatting for that class. The overall goal is to let you focus on the meaning of your writing, just as outside of math mode.
+\texttt{smath} is a collection of \LaTeX macros that automates and centralizes most of the formatting in math mode. The package defines appropriate formatting for different mathematical objects which can be easily applied to any string. The overall goal is to let you focus on the meaning of your writing, just as outside of math mode.
 \end{abstract}
 
 \section{Use Cases}
-My beef with \LaTeX is that it requires me to do a lot of manual formatting which makes the code crowded and unreadable. Moreover, direct formatting violates the basic principle of ``what you see is what you mean''. Finally, I think that math mode should work like CSS in that there should be some document-wide classes that define how a certain mathematical object should be formatted. Notice that while these issues may seem obvious and their solution trivial, I have not encountered a standard solution yet. Hence this package.
-\subsection{Standard Formatting}
-Consider a mathematical object that is given a standard formatting, say a vector. These are usually printed bold ($\nvec{x}$). For roman letters, we use the \texttt{mathbf} command. This does not work for greek letters, so we need to use the \texttt{boldsymbol} command. Dealing with different commands to format the same object is cumbersome. Furthermore, the commands have little semantic meaning as other objects (say matrices) may use the same formatting. The obvious solution is to define a macro that is applied to every vector and that takes care of the different formatting for different alphabets. To stick with the vector case, you can use the \texttt{nvec} command to mark any roman or greek letter as a vector in your source code. It will then be boldened automatically. If you prefer to format all your vectors by using an arrow, you can do so by changing the macro.
-\subsection{Delimiter Scaling}
-Another issue concerns the use of delimiters and parantheses for operator functions (e.g. the exponential function). In complicated expressions, we need to use the \texttt{left} and \texttt{right} commands to scale parantheses so that they ``hug'' fractions and inner parantheses correctly. This often piles up to a ton of scaling commands that completely obscure the meaning of the markup. Nonetheless, notice that a large proportion of braces and parantheses are used to declare functions and operators. Adequate macros can automate the formatting of operator names and the scaling of the parantheses. For example, the \texttt{op} command prints the name of the operator in straight letters (as customary) and encloses the argument in correctly scaled parantheses. When using the macros, you should only have to deal with delimiters when you are actually grouping terms.
-\subsection{Complex Expressions}
-Some areas of mathematics, especially statistics, contain a large amount of long and reocurring expressions (think density functions). The package provides macros that let you print some of those expressions for variable arguments with a single command.
+While providing users with the power to typeset any mathematical expression, \LaTeX still requires you to pay a lot of attention to the finer points of mathematical typography: spacing has to be increased around functions, operators have to be printed in normal font, delimiters require scaling... all these things increase cognitive load and divert attention from the actual content. Furthermore, direct formatting clutters the source code and is inconsistent with the principle of separation of layout and content. Thankfully, as 99 percent of the objects requiring further formatting may be grouped into a dozen cases, a few macros are sufficient to improve upon that situation. We reap the following benefits:
+\begin{itemize}
+  \item Almost all of the formatting details are automated through the use of a dozen macros. This includes most cases in which delimiters have to be scaled to reach around their content.
+  \item Commands become more indicative of the object they're formatting. This improves readability.
+  \item More gains to readability are made by freeing the source code of direct formatting commands.
+  \item Finally, you can consistenly change the layout of every equation in the document by slightly modifying the package.
+\end{itemize}
+To show how these gains are made, the next section provides coding examples and points out the exact improvements over standard methods.
+
+\section{Importing smath}
+Place \texttt{smath.sty} in the same folder as your \texttt{.tex} file and add \texttt{usepackage\{smath\}} to your preamble. \texttt{Smath} requires the \texttt{mathtools} and \texttt{xparse} packages. You can now use any macro defined in \texttt{smath.sty}. Consult the file for macro definitions. You can easily extend the package by adding your own macros to the file. Consult the \texttt{xparse} documentation on how to define macros.\\\\
+The goal is to have a set of options to choose from to extend functionality. Currently, there is a \texttt{stats} option that mostly provides macros for density functions.
 
 \section{Coding Examples}
 This section contains some examples of how the package is supposed to make your life easier. They illustrate the general ideas explained above.
-\subsection{The Trace of the Hat Matrix}
-The \texttt{op} command has two parameters which are the name of the operator and its argument. It prints the name in straight letters and encloses the argument in scaling parantheses. As an application, consider the trace of the hat matrix:
-\begin{align}
-  \op{tr}{\mat{H}} = \op{tr}{\mat{\Phi} (\mat{\Phi}\T \mat{\Phi})^{-1} \mat{\Phi}\T}
+
+\subsection{Operators and Functions}
+Formatting operators is the most complex use case of this package. Accordingly, the \texttt{op} command provides a lot of flexibility that takes a little bit of studying. Consider, for example, the inequality giving a chernoff bound:
+\begin{lstlisting}[caption=Chernoff bound, language=TeX]
+\op{Pr}{\op*{\sum}[i] X_i \geq a} \leq \op*{inf}[t \geq 0] \set{e^{-ta} \op{E}{\op*{\prod}[i = 1][n] e^{tX_i}}}
+\end{lstlisting}
+\begin{align} 
+  \op{Pr}{\op*{\sum}[i] X_i \geq a} \leq \op*{inf}[t \geq 0] \set{e^{-ta} \op{E}{\op*{\prod}[i = 1][n] e^{tX_i}}}
 \end{align}
-Now consider two equivalent ways of coding the equation above:
-\begin{lstlisting}[caption = Coding the trace of the hat matrix, language = TeX]
-% standard latex code
-\begin{equation}
-  \mathrm{tr}(\mathbf{H}) = \mathrm{tr} \left( \boldsymbol{\Phi} (\boldsymbol{\Phi}^\mathrm{T} \boldsmybol{\Phi})^{-1} \boldsymbol{\Phi}^\mathrm{T} \right)
-\end{equation}
-
-% code with smath macros
-\begin{equation}
-  \op{tr}{\mat{H}} = \op{tr}{\mat{\Phi} (\mat{\Phi}\T \mat{\Phi})^{-1} \mat{\Phi}\T}
-\end{equation}
+Multiple elements of this equation require attention in terms of formatting. For now, just observe the compactness of the full formula and study its aspects one by one. The following 4 items provide you with all you need to format operators correctly:
+\begin{itemize}
+\item 
+We want operators to stand out, typically by using normal or bold font. This requires a formatting command on every operator. The solution is to pass the operator name as the first argument to the \texttt{op} command. 
+\begin{lstlisting}[caption=Names, language=TeX]
+\op{inf}
 \end{lstlisting}
-Using a few widely applicable macros, we halved the length of the markup and made its mathematical meaning far more obvious.
-\subsection{The Multivariate Gaussian}
-Have a look at the density of the multivariate gaussian distribution:
-\begin{align}
-  \fun{p}{\nvec{x}, \nvec{\mu}, \mat{Q}} = \dmnorm{\nvec{x}}{\nvec{\mu}}{\mat{Q}}{D}
+\begin{align} 
+  \op{inf} 
+\end{align} 
+\item 
+In many cases, we want operators to have additional spacing around them, lest we end up with something like $a \mathbf{E} X$. In some cases we do not want additional spacing only on one side because the operator is followed by subscripts or brackets. You can obtain this behavior by passing sub (sup) scripts as optional arguments.
+\begin{lstlisting}[caption=Spacing, language=TeX]
+\op{E}[X] X
+\end{lstlisting}
+\begin{align} 
+  \op{E}[X] X
+\end{align} 
+\item 
+For some operators, we want sub/supscripts directly below and on top of the operator. All you have to do is add a star (*) to the \texttt{op} command. Note that this only applies to display mode.
+\begin{lstlisting}[caption=Limits, language=TeX]
+\op*{inf}[x \in \mathbf{R}] \func{f}{x}
+\end{lstlisting}
+\begin{align} 
+  \op*{inf}[x \in \mathbf{R}] \func{f}{x}
 \end{align}
-It may take minutes for an inexperienced typist to code that equation in \LaTeX. Have a look at two equivalent versions of the underlying \LaTeX code:
-\begin{lstlisting}[caption = Coding the density of the multivariate gaussian distribtion, language = TeX]
-% standard latex code
-\begin{equation}
-  p(\mathbf{x}, \boldsymbol{\mu}, \mathbf{Q}) = (2\pi)^{-\frac{D}{2}} \mathrm{det}(\mathbf{Q})^{\frac{1}{2}} \exp \left( -\frac{1}{2} (\mathbf{x} - \boldsymbol{\mu})^{\mathrm{T}} \mathbf{Q} (\mathbf{x} - \boldsymbol{\mu}) \right)
-\end{equation}
-
-% code with smath macros
-\begin{equation}
-  \fun{p}{\nvec{x}, \nvec{\mu}, \mat{Q}} = (2\pi)^{-\frac{D}{2}} \op{det}{\mat{Q}}^{\frac{1}{2}} \op{exp}{-\frac{1}{2} (\nvec{x} - \nvec{\mu})\T \mat{Q} (\nvec{x} - \nvec{\mu})}
-\end{equation}
+\item
+If we apply an operator to larger expressions, we want it to be surrounded by brackets. Passing that expression to the \texttt{op} command ensures that the delimiters are scaled correctly and makes the association clearer. It is always passed last, after any optional arguments:
+\begin{lstlisting}[caption=Brackets, language=TeX]
+\op{E}{\op*{\prod}[i = 1][n] X_i}
 \end{lstlisting}
-It actually took me 2 minutes to write the first version. The macros cut out 25\% of the code and again improve clarity. You would obtain even greater gains if you needed to scale more braces.\\\\
-Some expression occur so often in similar form that it may be more efficient to print them using macros. To stick with the previous example, you can print it using the following snippet:
-\begin{lstlisting}[caption = Coding the density with a macro, language = TeX]
-\begin{equation}
-  \fun{p}{\nvec{x}, \nvec{\mu}, \mat{Q}} = \dmnorm{\nvec{x}}{\nvec{\mu}}{\mat{Q}}{D}
-\end{equation}
-\end{lstlisting}
-It gives you some flexibility, but formatting might not be adequate for some arguments. Nevertheless, there are many circumstances in which you can save a lot of time by using these canned macros.
+\begin{align} 
+\op{E}{\op*{\prod}[i = 1][n] X_i}
+\end{align}
+\end{itemize}
 
-\section{Using smath}
-Place \texttt{smath.sty} in the same folder as your \texttt{.tex} file and add \texttt{usepackage\{smath\}} to your preamble. \texttt{Smath} requires the \texttt{mathtools} package to be installed. You can now use any macro defined in \texttt{smath.sty}. Consult the file for macro definitions. You can easily extend the package by adding your own macros to the file. Consult your favorite \LaTeX documentation on how to define macros.\\\\
-The goal is to have a set of options to choose from to extend functionality. Currently, there is a \texttt{stats} option that mostly provides macros for density functions.
+\subsection{Linear Algebra}
+Linear algebra often requires a lot of extra formatting to emphasize vectors and matrices. The least squares estimator is a good example:
+\begin{lstlisting}[caption=OLS, language=TeX]
+\est{\vect{\beta}} = (\mat{X}\T \mat{X})^{-1} \mat{X}\T \vect{y}
+\end{lstlisting}
+\begin{align}
+\est{\vect{\beta}} = (\mat{X}\T \mat{X})^{-1} \mat{X}\T \vect{y}
+\end{align}
+We use \texttt{vect} for vectors, \texttt{mat} for matrix and \texttt{T} for transpose. This saves us from having to deal with three different font formatting commands across the equation. To grasp the difference, consider the underlying code that the macros apply:
+\begin{lstlisting}[caption=OLS with direct formatting, language=TeX]
+\widehat{\boldsymbol{\beta}} = (\mathbf{X}^{\mathrm{T}} \mathbf{X})^{-1} \mathbf{X}^{\mathrm{T}} \boldsymbol{y}
+\end{lstlisting}
+\begin{align}
+  \widehat{\boldsymbol{\beta}} = (\mathbf{X}^{\mathrm{T}} \mathbf{X})^{-1} \mathbf{X}^{\mathrm{T}} \boldsymbol{y}
+\end{align}
+All of the usual advantages are present: The code is compact, more meaningful, and formatting can be changed centrally by modifying macros.
+
+\subsection{Canned Formulas}
+Some complicated expressions reoccur frequently and it is worth learning some extra macros to print them quickly. Consider for example the density function of the multivariate normal distribution:
+\begin{lstlisting}[caption=Multivariate normal distribution, language=TeX]
+\func{f}{\vect{x}, \vect{\mu}, \mat{Q}} = (2\pi)^{\frac{D}{2}} \op{det}{\mat{Q}}^{\frac{1}{2}} \op{exp}{-\frac{1}{2} (\vect{x} - \vect{\mu})\T \mat{Q} (\vect{x} - \vect{\mu})}
+\end{lstlisting}
+\begin{align}
+  \func{f}{\vect{x}, \vect{\mu}, \mat{Q}} = \frac{\op{det}{\mat{Q}}^{1/2}}{(2\pi)^{D/2}} \op{exp}{-\frac{1}{2} (\vect{x} - \vect{\mu})\T \mat{Q} (\vect{x} - \vect{\mu})}
+\end{align}
+You can avoid hand-coding that formula by using canned macros, such as \texttt{dmnorm}:
+\begin{lstlisting}[caption=Multivariate normal distribution (canned form), language=TeX]
+\func{f}{\vect{x}, \vect{\mu}, \mat{Q}} = \dmnorm{\vect{x}}{\vect{\mu}}{\mat{Q}}
+\end{lstlisting}
+\begin{align}
+  \func{f}{\vect{x}, \vect{\mu}, \mat{Q}} = \dmnorm{\vect{x}}{\vect{\mu}}{\mat{Q}}
+\end{align}
+Note that not all arguments will produce a nicely formatted formula, so you might have to go back to coding manually in some cases.
+
+\section{Further Reading}
+\begin{itemize}
+  \item American Mathematical Society, \emph{User’s Guide for the amsmath Package} (1999). \\
+    \url{ftp://ftp.ams.org/pub/tex/doc/amsmath/amsldoc.pdf}
+  \item The \LaTeX 3 project, \emph{The xparse package Document command parser} (2014). \\
+    \url{http://mirror.math.ku.edu/tex-archive/macros/latex/contrib/l3packages/xparse.pdf}
+\end{itemize}
 
 \end{document}
