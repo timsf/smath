@@ -1,3 +1,4 @@
+
 \documentclass[a4paper,10pt]{scrartcl}
 \usepackage[utf8]{inputenc}
 \usepackage[top = 3cm, left = 3cm, right = 3cm, bottom = 3cm]{geometry}
@@ -38,17 +39,17 @@ Place \texttt{smath.sty} in the same folder as your \texttt{.tex} file and add \
 The goal is to have a set of options to choose from to extend functionality. Currently, there is a \texttt{stats} option that mostly provides macros for density functions.
 
 \section{Coding Examples}
-This section contains some examples of how the package is supposed to make your life easier. They illustrate the general ideas explained above.
+This section introduces some concrete applications of \texttt{Smath} macros to math formatting.
 
 \subsection{Operators and Functions}
-Formatting operators is the most complex use case of this package. Accordingly, the \texttt{op} command provides a lot of flexibility that takes a little bit of studying. Consider, for example, the inequality giving a chernoff bound:
+Formatting operators is the most complex use case of this package. Accordingly, the \texttt{op} command provides a lot of flexibility that requires a little bit of studying. Consider, for example, the inequality giving a chernoff bound:
 \begin{lstlisting}[caption=Chernoff bound, language=TeX]
 \op{Pr}{\op*{\sum}[i] X_i \geq a} \leq \op*{inf}[t \geq 0] \set{e^{-ta} \op{E}{\op*{\prod}[i = 1][n] e^{tX_i}}}
 \end{lstlisting}
 \begin{align} 
   \op{Pr}{\op*{\sum}[i] X_i \geq a} \leq \op*{inf}[t \geq 0] \set{e^{-ta} \op{E}{\op*{\prod}[i = 1][n] e^{tX_i}}}
 \end{align}
-Multiple elements of this equation require attention in terms of formatting. For now, just observe the compactness of the full formula and study its aspects one by one. The following 4 items provide you with all you need to format operators correctly:
+Observe how compact the markup is in spite of the complexity of the formatting. The following 4 items provide you with all you need to achieve similar efficiency whenever you are formatting operators:
 \begin{itemize}
 \item 
 We want operators to stand out, typically by using normal or bold font. This requires a formatting command on every operator. The solution is to pass the operator name as the first argument to the \texttt{op} command. 
@@ -59,7 +60,7 @@ We want operators to stand out, typically by using normal or bold font. This req
   \op{inf} 
 \end{align} 
 \item 
-In many cases, we want operators to have additional spacing around them, lest we end up with something like $a \mathbf{E} X$. In some cases we do not want additional spacing only on one side because the operator is followed by subscripts or brackets. You can obtain this behavior by passing sub (sup) scripts as optional arguments.
+In many cases, we want operators to have additional spacing around them, lest we end up with something like $a \mathbf{E} X$. In some cases, we only want additional spacing on one side because the operator is followed by subscripts or brackets. You can obtain this behavior by passing sub (sup) scripts as optional arguments.
 \begin{lstlisting}[caption=Spacing, language=TeX]
 \op{E}[X] X
 \end{lstlisting}
@@ -75,7 +76,7 @@ For some operators, we want sub/supscripts directly below and on top of the oper
   \op*{inf}[x \in \mathbf{R}] \func{f}{x}
 \end{align}
 \item
-If we apply an operator to larger expressions, we want it to be surrounded by brackets. Passing that expression to the \texttt{op} command ensures that the delimiters are scaled correctly and makes the association clearer. It is always passed last, after any optional arguments:
+If we apply an operator to larger expressions, we want that expression to be surrounded by brackets. Passing that expression to the \texttt{op} command ensures that the delimiters are scaled correctly and makes the association clearer. It is always passed last, after any optional arguments:
 \begin{lstlisting}[caption=Brackets, language=TeX]
 \op{E}{\op*{\prod}[i = 1][n] X_i}
 \end{lstlisting}
@@ -94,15 +95,15 @@ Linear algebra often requires a lot of extra formatting to emphasize vectors and
 \end{align}
 We use \texttt{vect} for vectors, \texttt{mat} for matrix and \texttt{T} for transpose. This saves us from having to deal with three different font formatting commands across the equation. To grasp the difference, consider the underlying code that the macros apply:
 \begin{lstlisting}[caption=OLS with direct formatting, language=TeX]
-\widehat{\boldsymbol{\beta}} = (\mathbf{X}^{\mathrm{T}} \mathbf{X})^{-1} \mathbf{X}^{\mathrm{T}} \boldsymbol{y}
+\widehat{\boldsymbol{\beta}} = (\mathbf{X}^{\mathsf{T}} \mathbf{X})^{-1} \mathbf{X}^{\mathsf{T}} \boldsymbol{y}
 \end{lstlisting}
 \begin{align}
-  \widehat{\boldsymbol{\beta}} = (\mathbf{X}^{\mathrm{T}} \mathbf{X})^{-1} \mathbf{X}^{\mathrm{T}} \boldsymbol{y}
+  \widehat{\boldsymbol{\beta}} = (\mathbf{X}^{\mathsf{T}} \mathbf{X})^{-1} \mathbf{X}^{\mathsf{T}} \boldsymbol{y}
 \end{align}
-All of the usual advantages are present: The code is compact, more meaningful, and formatting can be changed centrally by modifying macros.
+All of the usual advantages are present: The code is more compact, more meaningful, and you can change formatting styles for the entire document by modifying macros.
 
-\subsection{Canned Formulas}
-Some complicated expressions reoccur frequently and it is worth learning some extra macros to print them quickly. Consider for example the density function of the multivariate normal distribution:
+\subsection{Canned Formulae}
+Some complicated expressions occur frequently and it is worth learning some extra macros to print them quickly. Consider for example the density function of the multivariate normal distribution:
 \begin{lstlisting}[caption=Multivariate normal distribution, language=TeX]
 \func{f}{\vect{x}, \vect{\mu}, \mat{Q}} = (2\pi)^{\frac{D}{2}} \op{det}{\mat{Q}}^{\frac{1}{2}} \op{exp}{-\frac{1}{2} (\vect{x} - \vect{\mu})\T \mat{Q} (\vect{x} - \vect{\mu})}
 \end{lstlisting}
